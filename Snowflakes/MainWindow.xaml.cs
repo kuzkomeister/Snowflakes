@@ -36,20 +36,22 @@ namespace Snowflakes
         private void _Main()
         {
             SnowflakeSegment segment = new SnowflakeSegment();
-            List<Contour> contours = Creator.CreateFull(segment);
+            Generator.GenerateSnowflakeSegment(segment);
+            List<Contour> contours = Creator.CreateSnowflakeContours(segment);
 
             Render.RenderNewSnoflakeSegment(pathSegment, segment);
             Render.RenderNewSnowflakeFull(canvasSnowflake, contours);
         }
 
 
-       
 
+
+
+
+
+
+        #region [ Служебные методы ]
         
-
-
-      
-
         public MainWindow()
         {
             InitializeComponent();
@@ -67,7 +69,10 @@ namespace Snowflakes
             if(sender is RadioButton RB)
             {
                 SnowflakeGenerator.NumberTemplate = Convert.ToInt32(RB.Tag);
+                _Main();
             }
         }
+        
+        #endregion
     }
 }

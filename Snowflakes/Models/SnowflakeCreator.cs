@@ -23,7 +23,7 @@ namespace Snowflakes.Models
         /// </summary>
         /// <param name="segment"></param>
         /// <returns></returns>
-        public List<Contour> CreateFull(SnowflakeSegment segment)
+        public List<Contour> CreateSnowflakeContours(SnowflakeSegment segment)
         {
             double angle = 0;
             List<Contour> res = new List<Contour>();

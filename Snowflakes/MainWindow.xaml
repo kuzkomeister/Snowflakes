@@ -33,7 +33,7 @@
             <Button Content="Экспорт в файл" IsEnabled="False"/>
             <Button Content="Установить путь сохранения" IsEnabled="False"/>
 
-            <RadioButton Content="1# Шаблон" Tag="1" Checked="RadioButton_Checked" />
+            <RadioButton Content="1# Шаблон" Tag="1" IsEnabled="True" Checked="RadioButton_Checked" />
             <RadioButton Content="2# Шаблон" Tag="2" Checked="RadioButton_Checked" />
             <RadioButton Content="3# Шаблон" Tag="3" Checked="RadioButton_Checked" />
             <RadioButton Content="4# Шаблон" Tag="4" Checked="RadioButton_Checked" />
@@ -44,7 +44,7 @@
             <Canvas.RenderTransform>
                 <ScaleTransform ScaleX="6" ScaleY="6"/>
             </Canvas.RenderTransform>
-            <Path Name="pathSegment" Stroke="Black" StrokeThickness="1" Fill="Transparent"/>
+            <Path x:Name="pathSegment" Stroke="Black" StrokeThickness="1" Fill="Transparent"/>
         </Canvas>
 
         <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
