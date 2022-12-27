@@ -40,6 +40,15 @@ namespace Snowflakes
         {
             SnowflakeSegment segment = new SnowflakeSegment();
             segment.TopPoints.Add(CreatePointInGradus(RadiusSegment - 20, -95));
+
+            segment.RightPoints.Add(CreatePointInGradus(RadiusSegment - 30, -90 + angleSegment / 2));
+            segment.RightPoints.Add(CreatePointInGradus(RadiusSegment - 40, -100 + angleSegment / 2));
+            segment.RightPoints.Add(CreatePointInGradus(RadiusSegment - 70, -90 + angleSegment / 2));
+
+            segment.LeftPoints.Add(CreatePointInGradus(RadiusSegment - 70, -90 - angleSegment / 2));
+            segment.LeftPoints.Add(CreatePointInGradus(RadiusSegment - 40, -80 - angleSegment / 2));
+            segment.LeftPoints.Add(CreatePointInGradus(RadiusSegment - 30, -90 - angleSegment / 2));
+
             List<Contour> contours = _CreateFull(segment);
 
             _RenderNewSnoflakeSegment(segment);
@@ -65,11 +74,13 @@ namespace Snowflakes
                 if (i % 2 == 0)
                 {
                     // Поворот
-                    //var rotatedLeftPoint = RotatePointGrad(segment.Left, angle);
-                    //if (HavePoint(topContour, rotatedLeftPoint) is false)
-                    //{
-                    //    topContour.Add(rotatedLeftPoint);
-                    //}
+
+                    // Вычисление точек внешней грани
+                    var rotatedLeftPoint = RotatePointGrad(segment.Left, angle);
+                    if (HavePoint(topContour, rotatedLeftPoint) is false)
+                    {
+                        topContour.Add(rotatedLeftPoint);
+                    }
 
                     foreach (var point in segment.TopPoints)
                     {
@@ -80,23 +91,18 @@ namespace Snowflakes
                         }
                     }
 
-                    //var rotatedRightPoint = RotatePointGrad(segment.Right, angle);
-                    //if (HavePoint(topContour, rotatedRightPoint) is false)
-                    //{
-                    //    topContour.Add(rotatedRightPoint);
-                    //}
+                    var rotatedRightPoint = RotatePointGrad(segment.Right, angle);
+                    if (HavePoint(topContour, rotatedRightPoint) is false)
+                    {
+                        topContour.Add(rotatedRightPoint);
+                    }
                 }
                 else
                 {
                     // Зеркально
-                    var axisPoint = CreatePointInRadians(RadiusSegment, ConvertGradToRad(-90 + angle));
+                    var axisPoint = CreatePointInGradus(RadiusSegment, -90 + angle);
 
-                    var symRightPoint = CreateSymmetricPoint(RotatePointGrad(segment.Right, angle), axisPoint);
-                    if (HavePoint(topContour, symRightPoint) is false)
-                    {
-                        topContour.Add(symRightPoint);
-                    }
-
+                    // Вычисление точек внешней грани
                     for (int ip = segment.TopPoints.Count - 1; ip >= 0; ip--)
                     {
                         var point = segment.TopPoints[ip];
@@ -109,10 +115,52 @@ namespace Snowflakes
                         }
                     }
 
-                    var symLeftPoint = CreateSymmetricPoint(RotatePointGrad(segment.Left, angle), axisPoint);
-                    if (HavePoint(topContour, symLeftPoint) is false)
+                    // Вычисление точек внутренней правой грани и соседней левой
+                    var rightContour = new Contour();
+                    foreach(var p in segment.RightPoints)
                     {
-                        topContour.Add(symLeftPoint);
+                        var symetricPoint = CreateSymmetricPoint(RotatePointGrad(p, angle), axisPoint);
+                        if(HavePoint(rightContour.Points, symetricPoint) is false)
+                        {
+                            rightContour.Points.Add(symetricPoint);
+                        }
+                    }
+                    for(int ip = segment.RightPoints.Count - 1; ip >= 0; ip--)
+                    {
+                        var point = segment.RightPoints[ip];
+                        var rotatedPoint = RotatePointGrad(point, angle - angleSegment);
+                        if(HavePoint(rightContour.Points, rotatedPoint) is false)
+                        {
+                            rightContour.Points.Add(rotatedPoint);
+                        }
+                    }
+                    if (rightContour.Points.Count > 2)
+                    {
+                        res.Add(rightContour);
+                    }
+
+                    // Вычисление точек внутренней левой грани и соседней правой
+                    var leftContour = new Contour();
+                    foreach(var p in segment.LeftPoints)
+                    {
+                        var symetricPoint = CreateSymmetricPoint(RotatePointGrad(p, angle), axisPoint);
+                        if(HavePoint(leftContour.Points, symetricPoint) is false)
+                        {
+                            leftContour.Points.Add(symetricPoint);
+                        }
+                    }
+                    for(int ip = segment.LeftPoints.Count - 1; ip >= 0; ip--)
+                    {
+                        var point = segment.LeftPoints[ip];
+                        var rotatedPoint = RotatePointGrad(point, angle + angleSegment);
+                        if(HavePoint(leftContour.Points, rotatedPoint) is false)
+                        {
+                            leftContour.Points.Add(rotatedPoint);
+                        }
+                    }
+                    if(leftContour.Points.Count > 2)
+                    {
+                        res.Add(leftContour);
                     }
                 }
 
