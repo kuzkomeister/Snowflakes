@@ -64,12 +64,20 @@ namespace Snowflakes
             _Main();
         }
 
+        private bool isFirst = true;
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if(sender is RadioButton RB)
             {
                 SnowflakeGenerator.NumberTemplate = Convert.ToInt32(RB.Tag);
-                _Main();
+                if (isFirst)
+                {
+                    isFirst = !isFirst;
+                }
+                else
+                {
+                    _Main();
+                }
             }
         }
         

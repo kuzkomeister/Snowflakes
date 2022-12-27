@@ -26,9 +26,6 @@ namespace Snowflakes.Models
                     GenerateTemplate1(segment);
                     break;
 
-                default:
-                    MessageBox.Show("Не выбран шаблон для Генератора", "Ошибка!", MessageBoxButton.OK, MessageBoxImage.Error);
-                    break;
             }
         }
 
