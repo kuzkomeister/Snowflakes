@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="netDxf.netstandard" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Snowflake.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

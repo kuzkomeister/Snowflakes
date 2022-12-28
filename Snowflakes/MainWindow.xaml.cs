@@ -14,6 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using netDxf;
+using netDxf.Entities;
+
 using Snowflakes.Models;
 
 namespace Snowflakes
@@ -33,16 +36,21 @@ namespace Snowflakes
 
         #endregion
 
+        public SnowflakeSegment CurrentSnowflakeSegment { get; private set; }
+        public List<Contour> CurrentSnowflake { get; private set; }
+
+        public int Seed { get; private set; }
+
         private void _Main()
         {
-            int seed = new Random().Next();
-            txtTemplate.Text = $"Шаблон снежинки #{seed}:";
-            SnowflakeSegment segment = new SnowflakeSegment();
-            Generator.GenerateSnowflakeSegment(segment, seed);
-            List<Contour> contours = Creator.CreateSnowflakeContours(segment);
+            Seed = new Random().Next();
+            txtTemplate.Text = $"Шаблон снежинки #{Seed}:";
+            CurrentSnowflakeSegment = new SnowflakeSegment();
+            Generator.GenerateSnowflakeSegment(CurrentSnowflakeSegment, Seed);
+            CurrentSnowflake = Creator.CreateSnowflakeContours(CurrentSnowflakeSegment);
 
-            Render.RenderNewSnoflakeSegment(pathSegment, segment);
-            Render.RenderNewSnowflakeFull(canvasSnowflake, contours);
+            Render.RenderNewSnoflakeSegment(pathSegment, CurrentSnowflakeSegment);
+            Render.RenderNewSnowflakeFull(canvasSnowflake, CurrentSnowflake);
         }
 
 
@@ -82,7 +90,25 @@ namespace Snowflakes
                 }
             }
         }
-        
+
         #endregion
+
+        private void BtnClick_CreateDxf(object sender, RoutedEventArgs e)
+        {
+            string fileName = $"C:\\Users\\peace\\Desktop\\snowflake_{Seed}.dxf";
+
+            DxfDocument doc = new DxfDocument();
+
+            foreach(var contour in CurrentSnowflake)
+            {
+                var polyline = new netDxf.Entities.Polyline() { IsClosed = true };
+                foreach(var point in contour.Points)
+                {
+                    polyline.Vertexes.Add(new PolylineVertex(point.X, point.Y, 0));
+                }
+                doc.AddEntity(polyline);
+            }
+            doc.Save(fileName);
+        }
     }
 }
