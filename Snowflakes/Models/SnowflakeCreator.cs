@@ -143,7 +143,7 @@ namespace Snowflakes.Models
 
             var externalContour = new Contour(topContour.ToArray());
 
-            res.Add(externalContour);
+            res.Insert(0, externalContour);
             return res;
         }
         

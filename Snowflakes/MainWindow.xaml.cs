@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Automation;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Forms;
 
 using netDxf;
 using netDxf.Entities;
@@ -35,6 +25,8 @@ namespace Snowflakes
         private SnowflakeGenerator Generator = new SnowflakeGenerator();
 
         #endregion
+
+        public string pathFile { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
         public SnowflakeSegment CurrentSnowflakeSegment { get; private set; }
         public List<Contour> CurrentSnowflake { get; private set; }
@@ -77,7 +69,7 @@ namespace Snowflakes
         private bool isFirst = true;
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            if(sender is RadioButton RB)
+            if(sender is System.Windows.Controls.RadioButton RB)
             {
                 SnowflakeGenerator.NumberTemplate = Convert.ToInt32(RB.Tag);
                 if (isFirst)
@@ -95,7 +87,7 @@ namespace Snowflakes
 
         private void BtnClick_CreateDxf(object sender, RoutedEventArgs e)
         {
-            string fileName = $"C:\\Users\\peace\\Desktop\\snowflake_{Seed}.dxf";
+            string fileName = $"{pathFile}\\snowflake_{Seed}.dxf";
 
             DxfDocument doc = new DxfDocument();
 
@@ -109,6 +101,18 @@ namespace Snowflakes
                 doc.AddEntity(polyline);
             }
             doc.Save(fileName);
+        }
+
+        private void BtnClick_SetPath(object sender, RoutedEventArgs e)
+        {
+            using(var fbd = new FolderBrowserDialog())
+            {
+                var result = fbd.ShowDialog();
+                if(result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    pathFile = fbd.SelectedPath;
+                }
+            }
         }
     }
 }

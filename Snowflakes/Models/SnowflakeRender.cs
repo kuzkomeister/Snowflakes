@@ -51,13 +51,14 @@ namespace Snowflakes.Models
         public void RenderNewSnowflakeFull(Canvas canvasSnowflake, List<Contour> contours)
         {
             canvasSnowflake.Children.Clear();
-            foreach (var contour in contours)
+            for(int i = 0; i < contours.Count; i++)
             {
+                var contour = contours[i];
                 var path = new Path()
                 {
                     Stroke = Brushes.Black,
                     StrokeThickness = 1,
-                    Fill = Brushes.Transparent,
+                    Fill = i == 0 ? Brushes.Gray : Brushes.White,
                     Data = _RenderContour(contour)
                 };
                 canvasSnowflake.Children.Add(path);

@@ -60,7 +60,7 @@
                 <Button Content="Зарегистрировать и сохранить в файл" IsEnabled="False"/>
                 <Button Content="Экспорт в файл" Click="BtnClick_CreateDxf"/>
                 <Button Content="Каталог снежинок" IsEnabled="False"/>
-                <Button Content="Установить путь сохранения" IsEnabled="False"/>
+                <Button Content="Установить путь сохранения" Click="BtnClick_SetPath"/>
 
                 <Grid HorizontalAlignment="Center" Margin="0,5,0,0">
                     <WrapPanel>
@@ -89,7 +89,7 @@
 
             <Border Background="White" CornerRadius="10" Margin="10,10,5,10">
                 <Path x:Name="pathSegment" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Stroke="Black" StrokeThickness="1" Fill="Transparent">
+                        Stroke="Black" StrokeThickness="1" Fill="Gray">
                     <Path.RenderTransform>
                         <ScaleTransform ScaleX="2" ScaleY="2" CenterX="-10" CenterY="-100"/>
                     </Path.RenderTransform>
