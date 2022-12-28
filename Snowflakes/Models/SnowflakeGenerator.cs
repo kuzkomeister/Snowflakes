@@ -17,7 +17,7 @@ namespace Snowflakes.Models
         /// <summary>
         /// Количество попыток создать контур
         /// </summary>
-        public static int ContourTryes = 100;
+        public static int ContourTryes = 10;
 
         /// <summary>
         /// Обработать шаблон снежинки
@@ -73,39 +73,85 @@ namespace Snowflakes.Models
             }
 
             // Создание контуров внешней грани
-            for(int i = 0; i < amountTopContours; i++)
+            for (int i = 0; i < amountTopContours; i++)
             {
                 var contour = new Contour();
+                bool isAgain = false;
+                int numTry = 0;
+                do
+                {
+                    isAgain = false;
+                    double startPercent = 0;    //r.NextDouble() * 0.25;
+                    double endPercent = 1;      //1 - r.NextDouble() * 0.25;
+                    double midPercent = r.NextDouble() * (endPercent - startPercent) + startPercent;
 
-                double length = GetLength(segment.Left, segment.Right);
+                    contour.Points.Add(CreatePointOnLinePercent(segment.Left, segment.Right, startPercent));
+                    var p = CreatePointOnLinePercent(segment.Left, segment.Right, midPercent);
+                    contour.Points.Add(new Point(p.X, p.Y + r.Next(5, 40)));
+                    contour.Points.Add(CreatePointOnLinePercent(segment.Left, segment.Right, endPercent));
 
-                double startPercent = r.NextDouble() * 0.25;
-                double endPercent = 1 - r.NextDouble() * 0.25;
-                double midPercent = r.NextDouble() * (endPercent - startPercent) + startPercent;
+                    foreach (var c in segment.LeftContours)
+                    {
+                        if (c.IsIntersect(contour))
+                        {
+                            isAgain = true;
+                        }
+                    }
+                    numTry++;
+                }
+                while (isAgain && numTry < ContourTryes);
 
-                contour.Points.Add(CreatePointOnLinePercent(segment.Left, segment.Right, startPercent));
-                var p = CreatePointOnLinePercent(segment.Left, segment.Right, midPercent);
-                contour.Points.Add(new Point(p.X, p.Y + r.Next(5, 40)));
-                contour.Points.Add(CreatePointOnLinePercent(segment.Left, segment.Right, endPercent));
-
-                segment.TopContours.Add(contour);
+                if (numTry < ContourTryes)
+                {
+                    segment.TopContours.Add(contour);
+                }
             }
 
             // Создание контуров правой грани
-            for(int i = 0; i < amountRightContours; i++)
+            for (int i = 0; i < amountRightContours; i++)
             {
                 var contour = new Contour();
+                bool isAgain = false;
+                int numTry = 0;
+                do
+                {
+                    double endPercent = r.Next(10, (int)RadiusSegment / 2 - 10) / RadiusSegment;
+                    double startPercent = r.Next((int)RadiusSegment / 2 + 10, (int)RadiusSegment - 10) / RadiusSegment;
+                    double midPercent = r.NextDouble() * (endPercent - startPercent) + startPercent;
 
-                double endPercent = r.Next(10, (int)RadiusSegment / 2 - 10) / RadiusSegment;
-                double startPercent = r.Next((int)RadiusSegment / 2 + 10, (int)RadiusSegment - 10) / RadiusSegment;
-                double midPercent = r.NextDouble() * (endPercent - startPercent) + startPercent;
+                    contour.Points.Add(CreatePointOnLinePercent(segment.Right, new Point(), endPercent));
+                    var p = CreatePointOnLinePercent(segment.Right, new Point(), midPercent);
+                    contour.Points.Add(RotatePointGrad(p, -r.Next(5, 15)));
+                    contour.Points.Add(CreatePointOnLinePercent(segment.Right, new Point(), startPercent));
 
-                contour.Points.Add(CreatePointOnLinePercent(segment.Right, new Point(), endPercent));
-                var p = CreatePointOnLinePercent(segment.Right, new Point(), midPercent);
-                contour.Points.Add(RotatePointGrad(p, -r.Next(5, 15)));
-                contour.Points.Add(CreatePointOnLinePercent(segment.Right, new Point(), startPercent));
+                    foreach (var c in segment.LeftContours)
+                    {
+                        if (c.IsIntersect(contour))
+                        {
+                            isAgain = true;
+                        }
+                    }
+                    if(isAgain is false)
+                    {
+                        foreach (var c in segment.TopContours)
+                        {
+                            if (c.IsIntersect(contour))
+                            {
+                                isAgain = true;
+                            }
+                        }
+                    }
+                    numTry++;
+                }
+                while (isAgain && numTry < ContourTryes);
 
-                segment.RightContours.Add(contour);
+                if(numTry < ContourTryes)
+                {
+                    segment.RightContours.Add(contour);
+                }
+
+               
+
             }
 
 

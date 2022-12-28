@@ -59,6 +59,7 @@
                 <Button Content="Новая снежинка" Click="Click_NewSnow"/>
                 <Button Content="Зарегистрировать и сохранить в файл" IsEnabled="False"/>
                 <Button Content="Экспорт в файл" IsEnabled="False"/>
+                <Button Content="Каталог снежинок" IsEnabled="False"/>
                 <Button Content="Установить путь сохранения" IsEnabled="False"/>
 
                 <Grid HorizontalAlignment="Center" Margin="0,5,0,0">
