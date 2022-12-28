@@ -66,6 +66,34 @@ namespace Snowflakes.Models
             return new Point(origP.X + Xv, origP.Y + Yv);
         }
 
+        /// <summary>
+        /// Создать точку на отрезке на определенной длине
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public Point CreatePointOnLine(Point A, Point B, double length)
+        {
+            double lengthAB = Math.Sqrt(Math.Pow(B.X - A.X, 2) + Math.Pow(B.Y - A.Y, 2));
+            double k = length / lengthAB;
+            return new Point(A.X + (B.X - A.X) * k, 
+                             A.Y + (B.Y - A.Y) * k);
+        }
+
+        /// <summary>
+        /// Создать точку на отрезке на определенной длине в процентах
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <param name="lengthPercent"></param>
+        /// <returns></returns>
+        public Point CreatePointOnLinePercent(Point A, Point B, double lengthPercent)
+        {
+            double lengthAB = Math.Sqrt(Math.Pow(B.X - A.X, 2) + Math.Pow(B.Y - A.Y, 2));
+            return CreatePointOnLine(A, B, lengthAB * lengthPercent);
+        }
+
         #endregion
 
         #region [ Конвертеры угла ]
@@ -126,5 +154,6 @@ namespace Snowflakes.Models
         }
 
         #endregion
+
     }
 }

@@ -18,12 +18,12 @@ namespace Snowflakes.Models
         /// Обработать шаблон снежинки
         /// </summary>
         /// <param name="segment"></param>
-        public void GenerateSnowflakeSegment(SnowflakeSegment segment)
+        public void GenerateSnowflakeSegment(SnowflakeSegment segment, int seed)
         {
             switch (NumberTemplate)
             {
                 case 1:
-                    GenerateTemplate1(segment);
+                    GenerateTemplate1(segment, seed);
                     break;
 
             }
@@ -33,15 +33,64 @@ namespace Snowflakes.Models
         /// Сгенерировать по сценарию 1
         /// </summary>
         /// <param name="segment"></param>
-        private void GenerateTemplate1(SnowflakeSegment segment) 
+        private void GenerateTemplate1(SnowflakeSegment segment, int seed) 
         {
+            Random r = new Random(seed);
+
+            int amountLeftContours = 1;
+            int amountRightContours = 1;
+            int amountTopContours = 1;
+
+            int amountAverageLeftPoints = 1;
+            int amountAverageRightPoints = 1;
+            int amountAverageTopPoints = 1;
+
+            int amountEpsLeftPoints = 0;
+            int amountEpsRightPoints = 0;
+            int amountEpsTopPoints = 0;
+
+
+            // Создание контуров левой грани
+            for(int i = 0; i < amountLeftContours; i++)
+            {
+                var contour = new Contour();
+
+                double startPercent = r.Next(10, (int)RadiusSegment / 2 - 10) / RadiusSegment;
+                double endPercent = r.Next((int)RadiusSegment / 2 + 10, (int)RadiusSegment - 10) / RadiusSegment;
+                double midPercent = r.NextDouble() * (endPercent - startPercent) + startPercent;
+
+                contour.Points.Add(CreatePointOnLinePercent(new Point(), segment.Left, startPercent));
+                var p = CreatePointOnLinePercent(new Point(), segment.Left, midPercent);
+                contour.Points.Add(RotatePointGrad(p, r.Next(5, 15)));
+                contour.Points.Add(CreatePointOnLinePercent(new Point(), segment.Left, endPercent));
+
+                segment.LeftContours.Add(contour);
+            }
+
+            // Создание контуров внешней грани
+            for(int i = 0; i < amountTopContours; i++)
+            {
+                var contour = new Contour();
+
+                segment.TopContours.Add(contour);
+            }
+
+            // Создание контуров правой грани
+            for(int i = 0; i < amountRightContours; i++)
+            {
+                var contour = new Contour();
+
+                segment.RightContours.Add(contour);
+            }
+
+
             //segment.TopPoints.Add(CreatePointInGradus(RadiusSegment - 40, -90));
 
-            var left = new Contour();
-            left.Points.Add(CreatePointInGradus(RadiusSegment - 50, -90 - AngleSegment / 2));
-            left.Points.Add(CreatePointInGradus(RadiusSegment - 40, -90 - AngleSegment / 2 + 10));
-            left.Points.Add(CreatePointInGradus(RadiusSegment - 20, -90 - AngleSegment / 2));
-            segment.LeftContours.Add(left);
+            //var left = new Contour();
+            //left.Points.Add(CreatePointInGradus(RadiusSegment - 50, -90 - AngleSegment / 2));
+            //left.Points.Add(CreatePointInGradus(RadiusSegment - 40, -90 - AngleSegment / 2 + 10));
+            //left.Points.Add(CreatePointInGradus(RadiusSegment - 20, -90 - AngleSegment / 2));
+            //segment.LeftContours.Add(left);
         }
     }
 }

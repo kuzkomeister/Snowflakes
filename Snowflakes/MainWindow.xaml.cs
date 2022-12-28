@@ -35,8 +35,10 @@ namespace Snowflakes
 
         private void _Main()
         {
+            int seed = new Random().Next();
+            txtTemplate.Text = $"Шаблон снежинки #{seed}:";
             SnowflakeSegment segment = new SnowflakeSegment();
-            Generator.GenerateSnowflakeSegment(segment);
+            Generator.GenerateSnowflakeSegment(segment, seed);
             List<Contour> contours = Creator.CreateSnowflakeContours(segment);
 
             Render.RenderNewSnoflakeSegment(pathSegment, segment);
