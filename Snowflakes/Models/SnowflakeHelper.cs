@@ -75,7 +75,7 @@ namespace Snowflakes.Models
         /// <returns></returns>
         public Point CreatePointOnLine(Point A, Point B, double length)
         {
-            double lengthAB = Math.Sqrt(Math.Pow(B.X - A.X, 2) + Math.Pow(B.Y - A.Y, 2));
+            double lengthAB = GetLength(A, B);
             double k = length / lengthAB;
             return new Point(A.X + (B.X - A.X) * k, 
                              A.Y + (B.Y - A.Y) * k);
@@ -152,6 +152,14 @@ namespace Snowflakes.Models
             return new Point(point.X * Math.Cos(ConvertGradToRad(angle)) - point.Y * Math.Sin(ConvertGradToRad(angle)),
                              point.X * Math.Sin(ConvertGradToRad(angle)) + point.Y * Math.Cos(ConvertGradToRad(angle)));
         }
+
+        /// <summary>
+        /// Получить длину между точками
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <returns></returns>
+        public double GetLength(Point A, Point B) => Math.Sqrt(Math.Pow(B.X - A.X, 2) + Math.Pow(B.Y - A.Y, 2));
 
         #endregion
 

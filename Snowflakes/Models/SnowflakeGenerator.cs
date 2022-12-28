@@ -15,6 +15,11 @@ namespace Snowflakes.Models
         public static int NumberTemplate = 0;
 
         /// <summary>
+        /// Количество попыток создать контур
+        /// </summary>
+        public static int ContourTryes = 100;
+
+        /// <summary>
         /// Обработать шаблон снежинки
         /// </summary>
         /// <param name="segment"></param>
@@ -72,6 +77,17 @@ namespace Snowflakes.Models
             {
                 var contour = new Contour();
 
+                double length = GetLength(segment.Left, segment.Right);
+
+                double startPercent = r.NextDouble() * 0.25;
+                double endPercent = 1 - r.NextDouble() * 0.25;
+                double midPercent = r.NextDouble() * (endPercent - startPercent) + startPercent;
+
+                contour.Points.Add(CreatePointOnLinePercent(segment.Left, segment.Right, startPercent));
+                var p = CreatePointOnLinePercent(segment.Left, segment.Right, midPercent);
+                contour.Points.Add(new Point(p.X, p.Y + r.Next(5, 40)));
+                contour.Points.Add(CreatePointOnLinePercent(segment.Left, segment.Right, endPercent));
+
                 segment.TopContours.Add(contour);
             }
 
@@ -79,6 +95,15 @@ namespace Snowflakes.Models
             for(int i = 0; i < amountRightContours; i++)
             {
                 var contour = new Contour();
+
+                double endPercent = r.Next(10, (int)RadiusSegment / 2 - 10) / RadiusSegment;
+                double startPercent = r.Next((int)RadiusSegment / 2 + 10, (int)RadiusSegment - 10) / RadiusSegment;
+                double midPercent = r.NextDouble() * (endPercent - startPercent) + startPercent;
+
+                contour.Points.Add(CreatePointOnLinePercent(segment.Right, new Point(), endPercent));
+                var p = CreatePointOnLinePercent(segment.Right, new Point(), midPercent);
+                contour.Points.Add(RotatePointGrad(p, -r.Next(5, 15)));
+                contour.Points.Add(CreatePointOnLinePercent(segment.Right, new Point(), startPercent));
 
                 segment.RightContours.Add(contour);
             }
