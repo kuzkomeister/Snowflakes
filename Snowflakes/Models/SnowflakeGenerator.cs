@@ -35,7 +35,13 @@ namespace Snowflakes.Models
         /// <param name="segment"></param>
         private void GenerateTemplate1(SnowflakeSegment segment) 
         {
-            segment.TopPoints.Add(CreatePointInGradus(RadiusSegment - 40, -90));
+            //segment.TopPoints.Add(CreatePointInGradus(RadiusSegment - 40, -90));
+
+            var left = new Contour();
+            left.Points.Add(CreatePointInGradus(RadiusSegment - 50, -90 - AngleSegment / 2));
+            left.Points.Add(CreatePointInGradus(RadiusSegment - 40, -90 - AngleSegment / 2 + 10));
+            left.Points.Add(CreatePointInGradus(RadiusSegment - 20, -90 - AngleSegment / 2));
+            segment.LeftContours.Add(left);
         }
     }
 }

@@ -43,15 +43,18 @@ namespace Snowflakes.Models
                         topContour.Add(rotatedLeftPoint);
                     }
 
-                    foreach (var point in segment.TopPoints)
+                    foreach(var contour in segment.TopContours)
                     {
-                        var rotatedPoint = RotatePointGrad(point, angle);
-                        if (HavePoint(topContour, rotatedPoint) is false)
+                        foreach (var point in contour.Points)
                         {
-                            topContour.Add(rotatedPoint);
+                            var rotatedPoint = RotatePointGrad(point, angle);
+                            if (HavePoint(topContour, rotatedPoint) is false)
+                            {
+                                topContour.Add(rotatedPoint);
+                            }
                         }
                     }
-
+                    
                     var rotatedRightPoint = RotatePointGrad(segment.Right, angle);
                     if (HavePoint(topContour, rotatedRightPoint) is false)
                     {
@@ -64,65 +67,75 @@ namespace Snowflakes.Models
                     var axisPoint = CreatePointInGradus(RadiusSegment, -90 + angle);
 
                     // Вычисление точек внешней грани
-                    for (int ip = segment.TopPoints.Count - 1; ip >= 0; ip--)
+                    foreach(var contour in segment.TopContours)
                     {
-                        var point = segment.TopPoints[ip];
-
-                        var rotatedPoint = RotatePointGrad(point, angle);
-                        var symetricPoint = CreateSymmetricPoint(rotatedPoint, axisPoint);
-                        if (HavePoint(topContour, symetricPoint) is false)
+                        for (int ip = contour.Points.Count - 1; ip >= 0; ip--)
                         {
-                            topContour.Add(symetricPoint);
+                            var point = contour.Points[ip];
+
+                            var rotatedPoint = RotatePointGrad(point, angle);
+                            var symetricPoint = CreateSymmetricPoint(rotatedPoint, axisPoint);
+                            if (HavePoint(topContour, symetricPoint) is false)
+                            {
+                                topContour.Add(symetricPoint);
+                            }
                         }
                     }
-
+                
                     // Вычисление точек внутренней правой грани и соседней левой
-                    var rightContour = new Contour();
-                    foreach (var p in segment.RightPoints)
+                    foreach(var contour in segment.RightContours)
                     {
-                        var symetricPoint = CreateSymmetricPoint(RotatePointGrad(p, angle), axisPoint);
-                        if (HavePoint(rightContour.Points, symetricPoint) is false)
+                        var rightContour = new Contour();
+                        foreach (var p in contour.Points)
                         {
-                            rightContour.Points.Add(symetricPoint);
+                            var symetricPoint = CreateSymmetricPoint(RotatePointGrad(p, angle), axisPoint);
+                            if (HavePoint(rightContour.Points, symetricPoint) is false)
+                            {
+                                rightContour.Points.Add(symetricPoint);
+                            }
                         }
-                    }
-                    for (int ip = segment.RightPoints.Count - 1; ip >= 0; ip--)
-                    {
-                        var point = segment.RightPoints[ip];
-                        var rotatedPoint = RotatePointGrad(point, angle - AngleSegment);
-                        if (HavePoint(rightContour.Points, rotatedPoint) is false)
+                        for (int ip = contour.Points.Count - 1; ip >= 0; ip--)
                         {
-                            rightContour.Points.Add(rotatedPoint);
+                            var point = contour.Points[ip];
+                            var rotatedPoint = RotatePointGrad(point, angle - AngleSegment);
+                            if (HavePoint(rightContour.Points, rotatedPoint) is false)
+                            {
+                                rightContour.Points.Add(rotatedPoint);
+                            }
                         }
-                    }
-                    if (rightContour.Points.Count > 2)
-                    {
-                        res.Add(rightContour);
+                        if (rightContour.Points.Count > 2)
+                        {
+                            res.Add(rightContour);
+                        }
                     }
 
                     // Вычисление точек внутренней левой грани и соседней правой
-                    var leftContour = new Contour();
-                    foreach (var p in segment.LeftPoints)
+                    foreach(var contour in segment.LeftContours)
                     {
-                        var symetricPoint = CreateSymmetricPoint(RotatePointGrad(p, angle), axisPoint);
-                        if (HavePoint(leftContour.Points, symetricPoint) is false)
+                        var leftContour = new Contour();
+                        foreach (var p in contour.Points)
                         {
-                            leftContour.Points.Add(symetricPoint);
+                            var symetricPoint = CreateSymmetricPoint(RotatePointGrad(p, angle), axisPoint);
+                            if (HavePoint(leftContour.Points, symetricPoint) is false)
+                            {
+                                leftContour.Points.Add(symetricPoint);
+                            }
+                        }
+                        for (int ip = contour.Points.Count - 1; ip >= 0; ip--)
+                        {
+                            var point = contour.Points[ip];
+                            var rotatedPoint = RotatePointGrad(point, angle + AngleSegment);
+                            if (HavePoint(leftContour.Points, rotatedPoint) is false)
+                            {
+                                leftContour.Points.Add(rotatedPoint);
+                            }
+                        }
+                        if (leftContour.Points.Count > 2)
+                        {
+                            res.Add(leftContour);
                         }
                     }
-                    for (int ip = segment.LeftPoints.Count - 1; ip >= 0; ip--)
-                    {
-                        var point = segment.LeftPoints[ip];
-                        var rotatedPoint = RotatePointGrad(point, angle + AngleSegment);
-                        if (HavePoint(leftContour.Points, rotatedPoint) is false)
-                        {
-                            leftContour.Points.Add(rotatedPoint);
-                        }
-                    }
-                    if (leftContour.Points.Count > 2)
-                    {
-                        res.Add(leftContour);
-                    }
+                  
                 }
 
                 angle += AngleSegment;

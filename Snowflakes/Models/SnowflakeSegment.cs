@@ -42,11 +42,20 @@ namespace Snowflakes.Models
             {
                 var res = new List<Point>();
 
-                res.AddRange(LeftPoints);
+                foreach(var left in LeftContours)
+                {
+                    res.AddRange(left.Points);
+                }
                 res.Add(Left);
-                res.AddRange(TopPoints);
+                foreach (var top in TopContours)
+                {
+                    res.AddRange(top.Points);
+                }
                 res.Add(Right);
-                res.AddRange(RightPoints);
+                foreach (var right in RightContours)
+                {
+                    res.AddRange(right.Points);
+                }
                 return res;
             } 
         }
@@ -54,17 +63,17 @@ namespace Snowflakes.Models
         /// <summary>
         /// Точки на внешней грани. Вверх.
         /// </summary>
-        public List<Point> TopPoints { get; set; } = new List<Point>();
-        
+        public List<Contour> TopContours { get; set; } = new List<Contour>();
+
         /// <summary>
         /// Точки на внутренней грани. Лево.
         /// </summary>
-        public List<Point> LeftPoints { get; set; } = new List<Point>();
-        
+        public List<Contour> LeftContours { get; set; } = new List<Contour>();
+
         /// <summary>
         /// Точки на внутренней грани. Право.
         /// </summary>
-        public List<Point> RightPoints { get; set; } = new List<Point>();
+        public List<Contour> RightContours { get; set; } = new List<Contour>();
 
         #endregion
 
