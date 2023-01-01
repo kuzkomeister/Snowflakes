@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -26,7 +28,7 @@ namespace Snowflakes
 
         #endregion
 
-        public string pathFile { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        public string pathFile { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "\\";
 
         public SnowflakeSegment CurrentSnowflakeSegment { get; private set; }
         public List<Contour> CurrentSnowflake { get; private set; }
@@ -35,7 +37,16 @@ namespace Snowflakes
 
         private void _Main()
         {
-            Seed = new Random().Next();
+            var r = new Random();
+            List<string> snowflakes = Directory.GetFiles(pathFile, "*.dxf").ToList();
+            List<int> seeds = new List<int>(snowflakes.Where(s => Convert.ToInt32(s.Split('_')[1]) == SnowflakeGenerator.NumberTemplate)
+                .Select(s => Convert.ToInt32(s.Split('_', '.')[2])));
+            do
+            {
+                Seed = r.Next();
+            } 
+            while (seeds.Contains(Seed));
+            
             txtTemplate.Text = $"Шаблон снежинки #{Seed}:";
             CurrentSnowflakeSegment = new SnowflakeSegment();
             Generator.GenerateSnowflakeSegment(CurrentSnowflakeSegment, Seed);
@@ -87,7 +98,7 @@ namespace Snowflakes
 
         private void BtnClick_CreateDxf(object sender, RoutedEventArgs e)
         {
-            string fileName = $"{pathFile}\\snowflake_{Seed}.dxf";
+            string fileName = $"{pathFile}snowflake_{SnowflakeGenerator.NumberTemplate}_{Seed}.dxf";
 
             DxfDocument doc = new DxfDocument();
 
@@ -110,7 +121,7 @@ namespace Snowflakes
                 var result = fbd.ShowDialog();
                 if(result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
-                    pathFile = fbd.SelectedPath;
+                    pathFile = fbd.SelectedPath + "\\";
                 }
             }
         }
